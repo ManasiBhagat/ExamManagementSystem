@@ -211,8 +211,6 @@ public class AddExamForm extends javax.swing.JFrame {
         radioAnswer2 = new javax.swing.JRadioButton();
         radioAnswer3 = new javax.swing.JRadioButton();
         radioAnswer4 = new javax.swing.JRadioButton();
-        deleteButton = new javax.swing.JButton();
-        updateButton = new javax.swing.JButton();
         addButton = new javax.swing.JButton();
         clearButton = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
@@ -223,26 +221,32 @@ public class AddExamForm extends javax.swing.JFrame {
 
         jLabel1.setText("Exam No.");
 
+        txtExamNo.setEditable(false);
         jScrollPane1.setViewportView(txtExamNo);
 
         jLabel2.setText("Total Questions");
 
+        txtTotalQuestions.setEditable(false);
         jScrollPane2.setViewportView(txtTotalQuestions);
 
         jLabel3.setText("Total Marks");
 
+        txtTotalMarks.setEditable(false);
         jScrollPane3.setViewportView(txtTotalMarks);
 
         jLabel4.setText("Passing Marks");
 
+        txtPassingMarks.setEditable(false);
         jScrollPane4.setViewportView(txtPassingMarks);
 
         jLabel5.setText("Exam Duration");
 
+        txtExamDuration.setEditable(false);
         jScrollPane5.setViewportView(txtExamDuration);
 
         jLabel6.setText("Exam Date");
 
+        txtExamDate.setEditable(false);
         jScrollPane6.setViewportView(txtExamDate);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -342,10 +346,6 @@ public class AddExamForm extends javax.swing.JFrame {
             }
         });
 
-        deleteButton.setText("Delete");
-
-        updateButton.setText("Update");
-
         addButton.setText("Add");
         addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -379,7 +379,7 @@ public class AddExamForm extends javax.swing.JFrame {
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                     .addComponent(radioAnswer3)
                                     .addGap(18, 18, 18)
-                                    .addComponent(txtAnswer3))
+                                    .addComponent(txtAnswer3, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE))
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                     .addComponent(radioAnswer2)
                                     .addGap(18, 18, 18)
@@ -388,14 +388,10 @@ public class AddExamForm extends javax.swing.JFrame {
                                     .addComponent(radioAnswer1)
                                     .addGap(18, 18, 18)
                                     .addComponent(txtAnswer1))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createSequentialGroup()
                                     .addComponent(addButton)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(clearButton)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(updateButton)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(deleteButton))
+                                    .addGap(41, 41, 41)
+                                    .addComponent(clearButton))
                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                     .addComponent(radioAnswer4)
                                     .addGap(18, 18, 18)
@@ -429,8 +425,6 @@ public class AddExamForm extends javax.swing.JFrame {
                     .addComponent(radioAnswer4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(deleteButton)
-                    .addComponent(updateButton)
                     .addComponent(addButton)
                     .addComponent(clearButton))
                 .addGap(55, 55, 55))
@@ -635,7 +629,6 @@ public class AddExamForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton clearButton;
-    private javax.swing.JButton deleteButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -670,6 +663,5 @@ public class AddExamForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtQuestionField;
     private javax.swing.JTextPane txtTotalMarks;
     private javax.swing.JTextPane txtTotalQuestions;
-    private javax.swing.JButton updateButton;
     // End of variables declaration//GEN-END:variables
 }

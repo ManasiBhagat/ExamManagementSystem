@@ -5,17 +5,72 @@
  */
 package exammanagementsystem;
 
+import static exammanagementsystem.StudentLoginForm.DB_URL;
+import static exammanagementsystem.StudentLoginForm.PASS;
+import static exammanagementsystem.StudentLoginForm.USER;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Manasi
  */
 public class StudentDashboardForm extends javax.swing.JFrame {
 
+    // JDBC driver name and database URL
+    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    static final String DB_URL = "jdbc:mysql://localhost:3306/javaprodb";
+    //  Database credentials
+    static final String USER = "root";
+    static final String PASS = "root";
+
+    Connection con = null;
+    Statement stmt = null;
+    ResultSet rs = null;
+
+    int student_id, rollNo, db_student_id;
+    String firstName, lastName, username;
+
     /**
      * Creates new form StudentDashboardForm
      */
     public StudentDashboardForm() {
         initComponents();
+    }
+
+    public StudentDashboardForm(int student_id) {
+        initComponents();
+        this.student_id = student_id;
+        displayStudentDetails();
+    }
+
+    public void displayStudentDetails() {
+        try {
+            con = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = con.createStatement();
+            String loginQuery = "SELECT student_id,first_name,last_name,roll_no,student_username "
+                    + "FROM student_table WHERE student_id = '" + student_id + "'";
+            rs = stmt.executeQuery(loginQuery);
+            while (rs.next()) {
+                db_student_id = rs.getInt("student_id");
+                firstName = rs.getString("first_name");
+                lastName = rs.getString("last_name");
+                rollNo = rs.getInt("roll_no");
+                username = rs.getString("student_username");
+            }
+            lbStudentName.setText("Name : " + firstName + " " + lastName);
+            lbRollNo.setText("Roll No. : " + rollNo);
+            lbUsername.setText("Username : " + username);
+            stmt.close();
+            rs.close();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -27,94 +82,115 @@ public class StudentDashboardForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        userDetailsPanel = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        examListButton = new javax.swing.JButton();
+        resultButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenu3 = new javax.swing.JMenu();
-        jMenu4 = new javax.swing.JMenu();
-        jMenu5 = new javax.swing.JMenu();
+        lbStudentName = new javax.swing.JLabel();
+        lbRollNo = new javax.swing.JLabel();
+        lbUsername = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Test");
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel2.setText("Student Dashboard");
 
-        javax.swing.GroupLayout userDetailsPanelLayout = new javax.swing.GroupLayout(userDetailsPanel);
-        userDetailsPanel.setLayout(userDetailsPanelLayout);
-        userDetailsPanelLayout.setHorizontalGroup(
-            userDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(userDetailsPanelLayout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(44, Short.MAX_VALUE))
-        );
-        userDetailsPanelLayout.setVerticalGroup(
-            userDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(userDetailsPanelLayout.createSequentialGroup()
-                .addGap(38, 38, 38)
-                .addComponent(jLabel1)
-                .addContainerGap(49, Short.MAX_VALUE))
-        );
-
-        jMenu1.setText("Student Dashboard");
-        jMenuBar1.add(jMenu1);
-
-        jMenu3.setText("Exam");
-        jMenu3.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                jMenu3MenuSelected(evt);
+        examListButton.setText("Exams");
+        examListButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                examListButtonActionPerformed(evt);
             }
         });
-        jMenuBar1.add(jMenu3);
 
-        jMenu4.setText("Results");
-        jMenu4.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                jMenu4MenuSelected(evt);
+        resultButton.setText("Results");
+        resultButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resultButtonActionPerformed(evt);
             }
         });
-        jMenuBar1.add(jMenu4);
 
-        jMenu5.setText("Logout");
-        jMenuBar1.add(jMenu5);
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
+                .addComponent(examListButton)
+                .addGap(18, 18, 18)
+                .addComponent(resultButton)
+                .addContainerGap(90, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(examListButton)
+                    .addComponent(resultButton))
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
 
-        setJMenuBar(jMenuBar1);
+        jLabel1.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\student-icon-graduation-with-mortar-board-vector-19676166.jpg")); // NOI18N
+        jLabel1.setText("jLabel1");
+
+        lbStudentName.setText("Name");
+
+        lbRollNo.setText("Roll No.");
+
+        lbUsername.setText("Username");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(userDetailsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 432, Short.MAX_VALUE))
+                .addGap(21, 21, 21)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lbRollNo, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbStudentName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(userDetailsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 241, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(74, 74, 74)
+                        .addComponent(lbStudentName)
+                        .addGap(18, 18, 18)
+                        .addComponent(lbRollNo, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(lbUsername))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(59, 59, 59)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(130, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenu3MenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_jMenu3MenuSelected
+    private void examListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_examListButtonActionPerformed
         // TODO add your handling code here:
-        userDetailsPanel.setVisible(false);
-    }//GEN-LAST:event_jMenu3MenuSelected
+        StudentExamListForm studentExamListForm = new StudentExamListForm(db_student_id);
+        studentExamListForm.setVisible(true);
+        
+    }//GEN-LAST:event_examListButtonActionPerformed
 
-    private void jMenu4MenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_jMenu4MenuSelected
+    private void resultButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resultButtonActionPerformed
         // TODO add your handling code here:
-        userDetailsPanel.setVisible(true);
-    }//GEN-LAST:event_jMenu4MenuSelected
+        StudentResultForm studentResultForm = new StudentResultForm(db_student_id);
+        studentResultForm.setVisible(true);
+    }//GEN-LAST:event_resultButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -151,13 +227,20 @@ public class StudentDashboardForm extends javax.swing.JFrame {
         });
     }
 
+    @Override
+    public void setDefaultCloseOperation(int operation) {
+        super.setDefaultCloseOperation(DISPOSE_ON_CLOSE); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton examListButton;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenu jMenu4;
-    private javax.swing.JMenu jMenu5;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel userDetailsPanel;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lbRollNo;
+    private javax.swing.JLabel lbStudentName;
+    private javax.swing.JLabel lbUsername;
+    private javax.swing.JButton resultButton;
     // End of variables declaration//GEN-END:variables
 }

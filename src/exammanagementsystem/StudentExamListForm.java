@@ -34,24 +34,30 @@ public class StudentExamListForm extends javax.swing.JFrame {
     ResultSet rs = null;
     PreparedStatement ps = null;
 
-    int exam_no;
-    String examDate,listString,listItem;
-    
+    int exam_no, student_id;
+    String examDate, listString, listItem;
 
     /**
      * Creates new form StudentExamListForm
      */
     public StudentExamListForm() {
         initComponents();
+    }
+
+    public StudentExamListForm(int student_id) {
+        initComponents();
+        this.student_id = student_id;
+        System.out.println(this.student_id);
         DefaultListModel model = new DefaultListModel();
         try {
             con = DriverManager.getConnection(DB_URL, USER, PASS);
-            ps = con.prepareStatement("SELECT exam_number,exam_date FROM exam_table GROUP BY exam_number");
+            ps = con.prepareStatement("SELECT exam_number,exam_date FROM exam_table "
+                    + "GROUP BY exam_number ORDER BY exam_number DESC");
             rs = ps.executeQuery();
             while (rs.next()) {
                 exam_no = rs.getInt(1);
                 examDate = rs.getString(2);
-                listString = "Exam No : "+String.valueOf(exam_no) + " Due Date : " + examDate;
+                listString = "Exam No : " + String.valueOf(exam_no) + " Due Date : " + examDate;
                 model.addElement(listString);
             }
             jList1.setModel(model);
@@ -62,6 +68,7 @@ public class StudentExamListForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -128,10 +135,10 @@ public class StudentExamListForm extends javax.swing.JFrame {
     private void startExamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startExamButtonActionPerformed
         // TODO add your handling code here:
         listItem = jList1.getSelectedValue();
-        String numberOnly= listItem.replaceAll("[^0-9]", "");
-        JOptionPane.showMessageDialog(null,"Start Exam : "+listItem);
+        String numberOnly = listItem.replaceAll("[^0-9]", "");
+        JOptionPane.showMessageDialog(null, "Start Exam : " + listItem);
         char firstNo = numberOnly.charAt(0);
-        StudentExamForm studentExamForm = new StudentExamForm(firstNo);
+        StudentExamForm studentExamForm = new StudentExamForm(firstNo,student_id);
         studentExamForm.setVisible(true);
     }//GEN-LAST:event_startExamButtonActionPerformed
 
@@ -169,6 +176,12 @@ public class StudentExamListForm extends javax.swing.JFrame {
             }
         });
     }
+
+    @Override
+    public void setDefaultCloseOperation(int operation) {
+        super.setDefaultCloseOperation(DISPOSE_ON_CLOSE); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

@@ -31,6 +31,9 @@ public class StudentLoginForm extends javax.swing.JFrame {
     Statement stmt = null;
     ResultSet rs = null;
 
+    String db_name = null, db_username = null, db_password = null, username = null, password = null, name = null;
+    int db_student_id = 0, studentId;
+
     /**
      * Creates new form StudentLoginForm
      */
@@ -80,6 +83,11 @@ public class StudentLoginForm extends javax.swing.JFrame {
         });
 
         studentForgetPassword.setText("Forget Password?");
+        studentForgetPassword.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                studentForgetPasswordMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -134,24 +142,27 @@ public class StudentLoginForm extends javax.swing.JFrame {
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
         // TODO add your handling code here:
         try {
+            username = studentUserName.getText();
+            password = String.valueOf(studentPassword.getPassword());
             con = DriverManager.getConnection(DB_URL, USER, PASS);
             stmt = con.createStatement();
-            String db_name = null, db_username = null, db_password = null, username = null, password = null, name = null;
-            int db_student_id = 0, studentId;
-            String loginQuery = "SELECT student_id,first_name,student_username,student_password FROM student_table";
+            String loginQuery = "SELECT student_id,first_name,student_username,student_password "
+                    + "FROM student_table WHERE student_username = '" + username + "'";
             rs = stmt.executeQuery(loginQuery);
-            if (rs.next()) {
+            while (rs.next()) {
                 db_student_id = rs.getInt("student_id");
                 db_name = rs.getString("first_name");
                 db_username = rs.getString("student_username");
                 db_password = rs.getString("student_password");
             }
             System.out.println(db_name + db_username + db_password);
-            username = studentUserName.getText();
-            password = String.valueOf(studentPassword.getPassword());
+
             System.out.println(username + password);
             if (username.equals(db_username) && password.equals(db_password)) {
-                JOptionPane.showMessageDialog(null, "Welcome " + db_name + db_student_id);
+                JOptionPane.showMessageDialog(null, "Welcome \n" + "Name : " + db_name + "\n ID : " + db_student_id);
+                StudentDashboardForm studentDashboardForm = new StudentDashboardForm(db_student_id);
+                studentDashboardForm.setVisible(true);
+                this.setVisible(false);
             } else {
                 JOptionPane.showMessageDialog(null, "Error");
             }
@@ -163,6 +174,12 @@ public class StudentLoginForm extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_submitButtonActionPerformed
+
+    private void studentForgetPasswordMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studentForgetPasswordMouseClicked
+        // TODO add your handling code here:
+        PasswordResetForm passwordResetForm = new PasswordResetForm();
+        passwordResetForm.setVisible(true);
+    }//GEN-LAST:event_studentForgetPasswordMouseClicked
 
     /**
      * @param args the command line arguments
@@ -198,6 +215,12 @@ public class StudentLoginForm extends javax.swing.JFrame {
             }
         });
     }
+
+    @Override
+    public void setDefaultCloseOperation(int operation) {
+        super.setDefaultCloseOperation(DISPOSE_ON_CLOSE); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

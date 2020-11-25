@@ -5,14 +5,24 @@
  */
 package exammanagementsystem;
 
+import static exammanagementsystem.AddExamForm.DB_URL;
+import static exammanagementsystem.AddExamForm.PASS;
+import static exammanagementsystem.AddExamForm.USER;
 import static exammanagementsystem.RegistrationForm.DB_URL;
 import static exammanagementsystem.RegistrationForm.PASS;
 import static exammanagementsystem.RegistrationForm.USER;
+import static exammanagementsystem.StudentDashboardForm.DB_URL;
+import static exammanagementsystem.StudentDashboardForm.PASS;
+import static exammanagementsystem.StudentDashboardForm.USER;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.JOptionPane;
 
 /**
@@ -33,8 +43,12 @@ public class StudentExamForm extends javax.swing.JFrame {
     ResultSet rs = null;
     PreparedStatement ps = null;
     char getExamNo;
-    int examDuration, examNo, questionNo = 0, totalQuestions, marks;
-    String examDate, question, answer1, answer2, answer3, answer4, correct_ans, ansSelected;
+    int student_id, db_student_id, rollNo, resultId;
+    String firstName, lastName, result;
+    int examDuration, examNo, questionNo = 0, totalQuestions, marks, totalMarks, passingMarks; //exam variables
+    String examDate, question, answer1, answer2, answer3, answer4, correct_ans, ansSelected;//exam variables
+    Timer timer;
+    int mins, secs;
 
     /**
      * Creates new form StudentExamForm
@@ -43,19 +57,68 @@ public class StudentExamForm extends javax.swing.JFrame {
         initComponents();
     }
 
-    public StudentExamForm(char getExamNo) {
+    public StudentExamForm(char getExamNo, int student_id) {
         initComponents();
         this.getExamNo = getExamNo;
+        this.student_id = student_id;
+        System.out.println("Student Id : " + this.student_id);
         System.out.println("Exam no : " + getExamNo);
         setData();
+        setStudentData();
         setQuestion();
+//        setLocationRelativeTo(this);
+        timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                secs++;
+                if (secs == 60) {
+                    secs = 0;
+                    mins++;
+                    if (mins == examDuration && secs==0) {
+                        timer.cancel();
+                        JOptionPane.showMessageDialog(null, "Time is up!" + "\n"
+                                + "Exam will be auto submited now and marks will be added accordingly.");
+                        correctAns();
+                        uploadResult();
+                    }
+                }
+                lbMin.setText(String.valueOf(mins));
+                lbSecs.setText(String.valueOf(secs));
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask, 1000, 1000);
 
+    }
+
+    public void setStudentData() {
+        try {
+            con = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = con.createStatement();
+            String loginQuery = "SELECT student_id,first_name,last_name,roll_no "
+                    + "FROM student_table WHERE student_id = '" + student_id + "'";
+            rs = stmt.executeQuery(loginQuery);
+            while (rs.next()) {
+                db_student_id = rs.getInt("student_id");
+                firstName = rs.getString("first_name");
+                lastName = rs.getString("last_name");
+                rollNo = rs.getInt("roll_no");
+            }
+            txtName.setText(firstName + " " + lastName);
+            txtRollNo.setText(String.valueOf(rollNo));
+            stmt.close();
+            rs.close();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setData() {
         try {
             con = DriverManager.getConnection(DB_URL, USER, PASS);
-            ps = con.prepareStatement("SELECT exam_number,exam_duration,exam_date,total_marks "
+            ps = con.prepareStatement("SELECT exam_number,exam_duration,exam_date,total_marks,passing_marks "
                     + "FROM exam_table WHERE exam_number = '" + getExamNo + "' GROUP BY exam_number");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -63,11 +126,15 @@ public class StudentExamForm extends javax.swing.JFrame {
                 examDuration = rs.getInt("exam_duration");
                 examDate = rs.getString("exam_date");
                 totalQuestions = rs.getInt("total_marks");
+                passingMarks = rs.getInt("passing_marks");
             }
             labelExamNo.setText(String.valueOf(examNo));
-            labelExamDuration.setText(String.valueOf(examDuration));
+            lbTotalTime.setText(String.valueOf(examDuration));
             labelExamDate.setText(examDate);
             txtTotalQuestion.setText(String.valueOf(totalQuestions));
+            totalMarks = totalQuestions;
+            txtTolatMarks.setText(String.valueOf(totalMarks));
+            txtPasingMarks.setText(String.valueOf(passingMarks));
             ps.close();
             rs.close();
             con.close();
@@ -180,6 +247,52 @@ public class StudentExamForm extends javax.swing.JFrame {
 
     }
 
+    public void uploadResult() {
+//        System.out.println(resultId + examNo + student_id + marksobtained + totalmarks + attendance + result);
+        try {
+            con = DriverManager.getConnection(DB_URL, USER, PASS);
+            ps = con.prepareStatement("SELECT MAX(result_id)+1 FROM result_table");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                resultId = rs.getInt(1);
+            }
+            ps.close();
+            rs.close();
+            con.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        if (resultId == 0) {
+            resultId = 1;
+        }
+
+        if (marks >= passingMarks) {
+            result = "Pass";
+        } else {
+            result = "Fail";
+        }
+
+        try {
+            con = DriverManager.getConnection(DB_URL, USER, PASS);
+            ps = con.prepareStatement("INSERT INTO result_table VALUES(?,?,?,?,?,?,?)");
+            ps.setInt(1, resultId);
+            ps.setInt(2, examNo);
+            ps.setInt(3, student_id);
+            ps.setInt(4, marks);
+            ps.setInt(5, totalQuestions);
+            ps.setString(6, "Present");
+            ps.setString(7, result);
+            ps.executeUpdate();
+            ps.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e);
+        }
+        JOptionPane.showMessageDialog(null, "Thank You for attending the exam, Go to Result Tab to check your result.");
+        this.setVisible(false);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -201,7 +314,6 @@ public class StudentExamForm extends javax.swing.JFrame {
         optionAnswer3 = new javax.swing.JRadioButton();
         optionAnswer4 = new javax.swing.JRadioButton();
         lbQuestion = new javax.swing.JLabel();
-        btnPrevious = new javax.swing.JButton();
         btnNext = new javax.swing.JButton();
         btnSubmit = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
@@ -209,9 +321,11 @@ public class StudentExamForm extends javax.swing.JFrame {
         lbExamDuration = new javax.swing.JLabel();
         lbDate = new javax.swing.JLabel();
         labelExamNo = new javax.swing.JLabel();
-        labelExamDuration = new javax.swing.JLabel();
+        lbMin = new javax.swing.JLabel();
         labelExamDate = new javax.swing.JLabel();
+        lbSecs = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        lbTotalTime = new javax.swing.JLabel();
         lbPassingMarks = new javax.swing.JLabel();
         txtRollNo = new javax.swing.JTextField();
         txtName = new javax.swing.JTextField();
@@ -261,13 +375,6 @@ public class StudentExamForm extends javax.swing.JFrame {
 
         lbQuestion.setText("Question");
 
-        btnPrevious.setText("Previous");
-        btnPrevious.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPreviousActionPerformed(evt);
-            }
-        });
-
         btnNext.setText("Next");
         btnNext.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -287,25 +394,20 @@ public class StudentExamForm extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(65, 65, 65)
+                .addComponent(lbQuestionNo, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(57, 57, 57)
-                        .addComponent(lbQuestionNo, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(optionAnswer4)
-                            .addComponent(optionAnswer1)
-                            .addComponent(lbQuestion, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(optionAnswer2)
-                            .addComponent(optionAnswer3)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addComponent(btnPrevious)
-                        .addGap(76, 76, 76)
                         .addComponent(btnNext)
-                        .addGap(95, 95, 95)
-                        .addComponent(btnSubmit)))
-                .addContainerGap(98, Short.MAX_VALUE))
+                        .addGap(99, 99, 99)
+                        .addComponent(btnSubmit))
+                    .addComponent(optionAnswer4)
+                    .addComponent(optionAnswer1)
+                    .addComponent(lbQuestion, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(optionAnswer2)
+                    .addComponent(optionAnswer3))
+                .addContainerGap(191, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -322,27 +424,34 @@ public class StudentExamForm extends javax.swing.JFrame {
                 .addComponent(optionAnswer3)
                 .addGap(18, 18, 18)
                 .addComponent(optionAnswer4)
-                .addGap(91, 91, 91)
+                .addGap(71, 71, 71)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPrevious)
                     .addComponent(btnNext)
                     .addComponent(btnSubmit))
-                .addContainerGap(91, Short.MAX_VALUE))
+                .addContainerGap(111, Short.MAX_VALUE))
         );
 
         lbExamNo.setText("Exam No");
 
-        lbExamDuration.setText("Exam Duration");
+        lbExamDuration.setText("Time : ");
 
         lbDate.setText("Date");
 
         labelExamNo.setText("1");
 
-        labelExamDuration.setText("1");
+        lbMin.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+        lbMin.setForeground(new java.awt.Color(255, 0, 0));
+        lbMin.setText("1");
 
         labelExamDate.setText("1");
 
-        jLabel1.setText("mins");
+        lbSecs.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+        lbSecs.setForeground(new java.awt.Color(255, 0, 0));
+        lbSecs.setText("0");
+
+        jLabel1.setText("Total Time : ");
+
+        lbTotalTime.setText("0");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -352,18 +461,22 @@ public class StudentExamForm extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lbExamNo, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(labelExamNo, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(56, 56, 56)
-                .addComponent(lbExamDuration, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelExamNo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addComponent(lbExamDuration)
+                .addGap(18, 18, 18)
+                .addComponent(lbMin, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(labelExamDuration, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbSecs, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(88, 88, 88)
-                .addComponent(lbDate, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbTotalTime, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34)
+                .addComponent(lbDate)
+                .addGap(18, 18, 18)
                 .addComponent(labelExamDate, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(59, 59, 59))
+                .addGap(143, 143, 143))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -374,13 +487,25 @@ public class StudentExamForm extends javax.swing.JFrame {
                     .addComponent(lbExamDuration)
                     .addComponent(lbDate)
                     .addComponent(labelExamNo)
-                    .addComponent(labelExamDuration)
+                    .addComponent(lbMin)
                     .addComponent(labelExamDate)
-                    .addComponent(jLabel1))
+                    .addComponent(lbSecs)
+                    .addComponent(jLabel1)
+                    .addComponent(lbTotalTime))
                 .addContainerGap(40, Short.MAX_VALUE))
         );
 
         lbPassingMarks.setText("Passing Marks");
+
+        txtRollNo.setEditable(false);
+
+        txtName.setEditable(false);
+
+        txtTotalQuestion.setEditable(false);
+
+        txtTolatMarks.setEditable(false);
+
+        txtPasingMarks.setEditable(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -390,29 +515,30 @@ public class StudentExamForm extends javax.swing.JFrame {
                 .addGap(24, 24, 24)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(lbTotalQuestion)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtTotalQuestion, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lbTotalMarks, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lbPassingMarks, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtTolatMarks, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtPasingMarks, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lbRollNo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lbName, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(txtRollNo, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addGap(15, 15, 15)
-                                .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
+                                .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(txtRollNo, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(lbTotalQuestion)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(txtTotalQuestion))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(lbTotalMarks, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lbPassingMarks, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txtTolatMarks, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtPasingMarks, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -476,18 +602,6 @@ public class StudentExamForm extends javax.swing.JFrame {
         optionAnswer4.setSelected(false);
     }//GEN-LAST:event_btnNextActionPerformed
 
-    private void btnPreviousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPreviousActionPerformed
-        // TODO add your handling code here:
-        setPreviousQuestions();
-        marks = marks - 1;
-        System.out.println("Marks after previous : "+marks);
-        btnNext.setEnabled(true);
-        optionAnswer1.setSelected(false);
-        optionAnswer2.setSelected(false);
-        optionAnswer3.setSelected(false);
-        optionAnswer4.setSelected(false);
-    }//GEN-LAST:event_btnPreviousActionPerformed
-
     private void optionAnswer1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionAnswer1ActionPerformed
         // TODO add your handling code here:
         optionAnswer2.setSelected(false);
@@ -520,6 +634,7 @@ public class StudentExamForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         correctAns();
         System.out.println("Total Marks : " + marks);
+        uploadResult();
     }//GEN-LAST:event_btnSubmitActionPerformed
 
     /**
@@ -557,27 +672,34 @@ public class StudentExamForm extends javax.swing.JFrame {
         });
     }
 
+    @Override
+    public void setDefaultCloseOperation(int operation) {
+        super.setDefaultCloseOperation(DISPOSE_ON_CLOSE); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnNext;
-    private javax.swing.JButton btnPrevious;
     private javax.swing.JButton btnSubmit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel labelExamDate;
-    private javax.swing.JLabel labelExamDuration;
     private javax.swing.JLabel labelExamNo;
     private javax.swing.JLabel lbDate;
     private javax.swing.JLabel lbExamDuration;
     private javax.swing.JLabel lbExamNo;
+    private javax.swing.JLabel lbMin;
     private javax.swing.JLabel lbName;
     private javax.swing.JLabel lbPassingMarks;
     private javax.swing.JLabel lbQuestion;
     private javax.swing.JLabel lbQuestionNo;
     private javax.swing.JLabel lbRollNo;
+    private javax.swing.JLabel lbSecs;
     private javax.swing.JLabel lbTotalMarks;
     private javax.swing.JLabel lbTotalQuestion;
+    private javax.swing.JLabel lbTotalTime;
     private javax.swing.JRadioButton optionAnswer1;
     private javax.swing.JRadioButton optionAnswer2;
     private javax.swing.JRadioButton optionAnswer3;
