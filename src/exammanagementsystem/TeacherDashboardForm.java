@@ -79,24 +79,31 @@ public class TeacherDashboardForm extends javax.swing.JFrame {
         setExamButton = new javax.swing.JButton();
         resultsButton = new javax.swing.JButton();
         prevPaperButton = new javax.swing.JButton();
+        studentRegistrationButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Teacher Dashboard");
+        setResizable(false);
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel1.setText("WELCOME");
 
         jLabel3.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\clipart-woman-cellphone-19.png")); // NOI18N
         jLabel3.setText("jLabel3");
 
+        teacher_name.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         teacher_name.setText("Teacher Name");
 
+        teacher_id.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         teacher_id.setText("Teacher Id");
 
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\1x\\dashboard.png")); // NOI18N
         jLabel2.setText("Teacher Dashboard");
 
+        setExamButton.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\1x\\addexam.png")); // NOI18N
         setExamButton.setText("Set Exam");
         setExamButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -104,6 +111,7 @@ public class TeacherDashboardForm extends javax.swing.JFrame {
             }
         });
 
+        resultsButton.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\1x\\result.png")); // NOI18N
         resultsButton.setText("Result");
         resultsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -111,10 +119,19 @@ public class TeacherDashboardForm extends javax.swing.JFrame {
             }
         });
 
+        prevPaperButton.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\1x\\prevexam.png")); // NOI18N
         prevPaperButton.setText("Previous Papers");
         prevPaperButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 prevPaperButtonActionPerformed(evt);
+            }
+        });
+
+        studentRegistrationButton.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\1x\\Registration.png")); // NOI18N
+        studentRegistrationButton.setText("Student Registration");
+        studentRegistrationButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                studentRegistrationButtonActionPerformed(evt);
             }
         });
 
@@ -125,13 +142,15 @@ public class TeacherDashboardForm extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(setExamButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addComponent(studentRegistrationButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(setExamButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(resultsButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(prevPaperButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,7 +158,8 @@ public class TeacherDashboardForm extends javax.swing.JFrame {
                 .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
                 .addComponent(setExamButton)
                 .addComponent(resultsButton)
-                .addComponent(prevPaperButton))
+                .addComponent(prevPaperButton)
+                .addComponent(studentRegistrationButton))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -148,37 +168,38 @@ public class TeacherDashboardForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
+                .addGap(173, 173, 173)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(39, 39, 39)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(teacher_id, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(teacher_name, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(122, 122, 122)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(teacher_id, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(teacher_name, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(275, 275, 275))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1)
-                .addGap(32, 32, 32)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
+                        .addGap(41, 41, 41)
+                        .addComponent(jLabel1)
+                        .addGap(31, 31, 31)
                         .addComponent(teacher_id)
-                        .addGap(36, 36, 36)
+                        .addGap(42, 42, 42)
                         .addComponent(teacher_name))
-                    .addComponent(jLabel3))
-                .addContainerGap(113, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(76, 76, 76)
+                        .addComponent(jLabel3)))
+                .addContainerGap(102, Short.MAX_VALUE))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void setExamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setExamButtonActionPerformed
@@ -198,6 +219,12 @@ public class TeacherDashboardForm extends javax.swing.JFrame {
         TeacherResultExamListForm teacherResultExamListForm = new TeacherResultExamListForm();
         teacherResultExamListForm.setVisible(true);
     }//GEN-LAST:event_resultsButtonActionPerformed
+
+    private void studentRegistrationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_studentRegistrationButtonActionPerformed
+        // TODO add your handling code here:
+        RegistrationForm registrationForm = new RegistrationForm();
+        registrationForm.setVisible(true);
+    }//GEN-LAST:event_studentRegistrationButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -247,6 +274,7 @@ public class TeacherDashboardForm extends javax.swing.JFrame {
     private javax.swing.JButton prevPaperButton;
     private javax.swing.JButton resultsButton;
     private javax.swing.JButton setExamButton;
+    private javax.swing.JButton studentRegistrationButton;
     private javax.swing.JLabel teacher_id;
     private javax.swing.JLabel teacher_name;
     // End of variables declaration//GEN-END:variables

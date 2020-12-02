@@ -33,10 +33,10 @@ public class StudentListForm extends javax.swing.JFrame {
     Statement stmt = null;
     ResultSet rs = null;
 
-    String firstName = null, lastName = null, gender = null, emailId = null, 
-            userName = null, password = null,dob=null,studentId = null, 
+    String firstName = null, lastName = null, gender = null, emailId = null,
+            userName = null, password = null, dob = null, studentId = null,
             rollNo = null, contactNo = null;
-  
+
     /**
      * Creates new form StudentListForm
      */
@@ -46,23 +46,23 @@ public class StudentListForm extends javax.swing.JFrame {
             con = DriverManager.getConnection(DB_URL, USER, PASS);
             stmt = con.createStatement();
             String selectQuery = "SELECT student_id,first_name,last_name,roll_no"
-                    + ",gender,contact_no,email_id,dob,student_username,student_password from student_table";
+                    + ",contact_no,gender,email_id,dob,student_username,student_password from student_table";
             rs = stmt.executeQuery(selectQuery);
             while (rs.next()) {
                 studentId = String.valueOf(rs.getInt("student_id"));
                 firstName = rs.getString("first_name");
                 lastName = rs.getString("last_name");
                 rollNo = String.valueOf(rs.getInt("roll_no"));
+                contactNo = String.valueOf(rs.getLong("contact_no"));
                 gender = rs.getString("gender");
-                contactNo = String.valueOf(rs.getInt("contact_no"));
                 emailId = rs.getString("email_id");
-                dob= rs.getString("dob");
-                userName= rs.getString("student_username");
-                password= rs.getString("student_password");
-                
-                String table[]={studentId,firstName,lastName,rollNo,gender,
-                contactNo,emailId,dob,userName,password};
-                DefaultTableModel tableModel=(DefaultTableModel)jTable1.getModel();
+                dob = rs.getString("dob");
+                userName = rs.getString("student_username");
+                password = rs.getString("student_password");
+
+                String table[] = {studentId, firstName, lastName, rollNo,
+                    contactNo, gender, emailId, dob, userName, password};
+                DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
                 tableModel.addRow(table);
             }
         } catch (Exception e) {
@@ -84,6 +84,8 @@ public class StudentListForm extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Student List");
+        setResizable(false);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -92,23 +94,30 @@ public class StudentListForm extends javax.swing.JFrame {
             new String [] {
                 "student_id", "first_name", "last_name", "roll no", "contact_no", "gender", "email_id", "dob", "student_username", "student_password"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 811, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 25, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -145,7 +154,7 @@ public class StudentListForm extends javax.swing.JFrame {
             }
         });
     }
-    
+
     @Override
     public void setDefaultCloseOperation(int operation) {
         super.setDefaultCloseOperation(DISPOSE_ON_CLOSE); //To change body of generated methods, choose Tools | Templates.

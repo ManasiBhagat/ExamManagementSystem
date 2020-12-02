@@ -92,10 +92,14 @@ public class StudentDashboardForm extends javax.swing.JFrame {
         lbUsername = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Student Dashboard");
+        setResizable(false);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\1x\\student.png")); // NOI18N
         jLabel2.setText("Student Dashboard");
 
+        examListButton.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\1x\\prevexam.png")); // NOI18N
         examListButton.setText("Exams");
         examListButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -103,6 +107,7 @@ public class StudentDashboardForm extends javax.swing.JFrame {
             }
         });
 
+        resultButton.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\1x\\result.png")); // NOI18N
         resultButton.setText("Results");
         resultButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -121,7 +126,7 @@ public class StudentDashboardForm extends javax.swing.JFrame {
                 .addComponent(examListButton)
                 .addGap(18, 18, 18)
                 .addComponent(resultButton)
-                .addContainerGap(90, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,10 +142,13 @@ public class StudentDashboardForm extends javax.swing.JFrame {
         jLabel1.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\student-icon-graduation-with-mortar-board-vector-19676166.jpg")); // NOI18N
         jLabel1.setText("jLabel1");
 
+        lbStudentName.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lbStudentName.setText("Name");
 
+        lbRollNo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lbRollNo.setText("Roll No.");
 
+        lbUsername.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lbUsername.setText("Username");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -166,17 +174,18 @@ public class StudentDashboardForm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(74, 74, 74)
                         .addComponent(lbStudentName)
-                        .addGap(18, 18, 18)
-                        .addComponent(lbRollNo, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addGap(61, 61, 61)
                         .addComponent(lbUsername))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(59, 59, 59)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(130, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbRollNo, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(124, Short.MAX_VALUE))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void examListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_examListButtonActionPerformed

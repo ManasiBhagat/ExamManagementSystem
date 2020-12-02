@@ -5,6 +5,7 @@
  */
 package exammanagementsystem;
 
+import java.awt.Component;
 import java.sql.*;
 import javax.swing.JOptionPane;
 
@@ -26,6 +27,7 @@ public class PreLoginForm extends javax.swing.JFrame {
      */
     public PreLoginForm() {
         initComponents();
+        databaseConnection();
     }
 
     public void databaseConnection() {
@@ -35,10 +37,8 @@ public class PreLoginForm extends javax.swing.JFrame {
             con = DriverManager.getConnection(DB_URL, USER, PASS);
             if(con!=null){
                 System.out.println("Connection Success" + con.toString());
-                JOptionPane.showMessageDialog(null, "Success" + con);
             }
             else{
-                JOptionPane.showMessageDialog(null, "Connection Not Successfull" + con);
                 System.out.println("Fail" + con.toString());
             }
             con.close();
@@ -65,10 +65,14 @@ public class PreLoginForm extends javax.swing.JFrame {
         studentButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Pre Login Form");
+        setResizable(false);
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel1.setText("Exam Management System");
 
+        teacherButton.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
+        teacherButton.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\1x\\teacher.png")); // NOI18N
         teacherButton.setText("Teacher");
         teacherButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -76,6 +80,8 @@ public class PreLoginForm extends javax.swing.JFrame {
             }
         });
 
+        studentButton.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
+        studentButton.setIcon(new javax.swing.ImageIcon("D:\\MBAIT-SEM1\\Java\\ProjectDocumentation\\image and icons\\1x\\student.png")); // NOI18N
         studentButton.setText("Student");
         studentButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -87,27 +93,27 @@ public class PreLoginForm extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(64, 64, 64)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(teacherButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(studentButton)
-                .addGap(69, 69, 69))
+                .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(111, 111, 111)
+                .addGap(47, 47, 47)
                 .addComponent(jLabel1)
-                .addContainerGap(119, Short.MAX_VALUE))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(62, 62, 62)
-                .addComponent(jLabel1)
-                .addGap(85, 85, 85)
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(studentButton)
                     .addComponent(teacherButton))
-                .addContainerGap(115, Short.MAX_VALUE))
+                .addGap(72, 72, 72)
+                .addComponent(jLabel1)
+                .addContainerGap(98, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -122,6 +128,7 @@ public class PreLoginForm extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void teacherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_teacherButtonActionPerformed
@@ -179,6 +186,7 @@ public class PreLoginForm extends javax.swing.JFrame {
     public void setDefaultCloseOperation(int operation) {
         super.setDefaultCloseOperation(DISPOSE_ON_CLOSE); //To change body of generated methods, choose Tools | Templates.
     }
+ 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
