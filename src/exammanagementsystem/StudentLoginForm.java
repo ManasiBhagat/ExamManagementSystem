@@ -161,7 +161,7 @@ public class StudentLoginForm extends javax.swing.JFrame {
                 studentDashboardForm.setVisible(true);
                 this.setVisible(false);
             } else {
-                JOptionPane.showMessageDialog(null, "Error");
+                JOptionPane.showMessageDialog(null, "Username or Password Invalid !");
             }
             stmt.close();
             rs.close();

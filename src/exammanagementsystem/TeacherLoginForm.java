@@ -149,7 +149,7 @@ public class TeacherLoginForm extends javax.swing.JFrame {
                     teacherDashboardForm.setVisible(true);
                     this.setVisible(false);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Error");
+                    JOptionPane.showMessageDialog(null, "Username or Password Invalid !");
                 }
                 stmt.close();
                 rs.close();
